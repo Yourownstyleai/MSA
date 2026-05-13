@@ -1,4 +1,3 @@
-[index.html](https://github.com/user-attachments/files/27585431/index.html)
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1041,6 +1040,67 @@ function renderResults(facial,pImgs,cImgs,rImgs,doPeinados,doColor,doRopa){
     renderColorGrid('c-evitgrid',facial.colores_evitar,facial.evitar_hex);
     renderGrid('grid-color',cImgs);
   }
+  // Ropa
+  if(doRopa){
+    document.getElementById('ropa-empty').style.display='none';
+    document.getElementById('ropa-result').style.display='block';
+    document.getElementById('r-figura').textContent='Figura '+facial.figura;
+    document.getElementById('r-errores').textContent=facial.errores_estilismo;
+    const rt=document.getElementById('r-tags');
+    rt.innerHTML='';
+    [facial.estilo_base||facial.estilos_ropa?.[0]||'Smart Casual'].forEach(t=>{const s=document.createElement('span');s.className='badge';s.textContent=t;rt.appendChild(s);});
+    renderGrid('grid-ropa',rImgs);
+    const rp=document.getElementById('r-prendas');
+    rp.innerHTML=(facial.prendas_clave||[]).map(p=>`<div class="info-card" style="margin-bottom:6px;"><div class="ic-label">PRENDA CLAVE</div><p>📌 ${p}</p></div>`).join('');
+  }
+}
+
+function renderGrid(id,imgs){
+  const g=document.getElementById(id);g.innerHTML='';
+  imgs.forEach(img=>{
+    const d=document.createElement('div');
+    if(img.url){
+      d.className='img-card';
+      d.innerHTML=`<img src="${img.url}" alt="${img.label}" loading="lazy"/><div class="img-lbl">${img.label}</div>`;
+    }else{
+      d.className='img-placeholder';
+      d.innerHTML=`<span>⚠️</span><p>${img.label}<br/><small>${img.error||'No generada'}</small></p>`;
+    }
+    g.appendChild(d);
+  });
+}
+
+function renderColorGrid(id,names,hexes){
+  const g=document.getElementById(id);if(!g)return;g.innerHTML='';
+  (hexes||[]).forEach((h,i)=>{
+    const d=document.createElement('div');d.className='c-chip';
+    d.innerHTML=`<div class="c-swatch" style="background:${h}"></div><div class="c-name">${(names||[])[i]||h}</div>`;
+    g.appendChild(d);
+  });
+}
+
+// ─── Stripe & Share ───────────────────────────────────────────────────────────
+function goStripe(plan){
+  // Replace with your real Stripe payment links
+  const urls={
+    monthly:'https://buy.stripe.com/MONTHLY_LINK',
+    annual:'https://buy.stripe.com/ANNUAL_LINK'
+  };
+  alert('🔗 Integra aquí tu link de Stripe:\n'+urls[plan]+'\n\nCrea tus links en dashboard.stripe.com → Payment Links');
+}
+
+function shareInstagram(){
+  const text='¡Acabo de hacer mi asesoría de imagen personal con IA en @mystyle_advice! 🌟✨ Peinados, colorimetría y outfits personalizados. ¡Es increíble! 👗💄 Pruébalo gratis → mystyleadvice.com\n\n#mystyleadvice #asesoriadeimagenIA #moda #estilo';
+  if(navigator.share){
+    navigator.share({text,url:'https://mystyleadvice.com'}).catch(()=>{});
+  }else{
+    window.open('https://www.instagram.com/mystyle_advice','_blank');
+    navigator.clipboard?.writeText(text).then(()=>alert('✓ Texto copiado. Pégalo en tu historia de Instagram y etiqueta @mystyle_advice'));
+  }
+}
+</script>
+</body>
+</html>
   // Ropa
   if(doRopa){
     document.getElementById('ropa-empty').style.display='none';
